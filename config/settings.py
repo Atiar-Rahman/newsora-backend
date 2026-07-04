@@ -96,7 +96,7 @@ DATABASES = {
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_VERIFICATION = 'none'  # Change to 'mandatory' in production
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
 
@@ -160,9 +160,12 @@ REST_AUTH = {
     'USE_JWT': True,
     'JWT_AUTH_COOKIE': 'access-token',
     'JWT_AUTH_REFRESH_COOKIE': 'refresh-token',
-    'JWT_AUTH_HTTPONLY': True,
-    'JWT_AUTH_SECURE': False,  # Set to True in production (HTTPS)
+    'JWT_AUTH_HTTPONLY': False,  # Set to True in production
+    'JWT_AUTH_SECURE': True,  # Set to True in production (HTTPS)
     'JWT_AUTH_SAMESITE': 'Lax',
+    'REGISTER_SERIALIZER': 'users.serializers.CustomRegisterSerializer',
+    "USER_DETAILS_SERIALIZER": "users.serializers.CustomUserDetailsSerializer",
+    "LOGIN_SERIALIZER": "users.serializers.CustomLoginSerializer",
 }
 
 
