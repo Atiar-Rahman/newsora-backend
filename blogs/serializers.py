@@ -28,9 +28,11 @@ class BlogSerializer(ModelSerializer):
         read_only_fields = ['id','user','slug','created_at','updated_at']        
         
     def create(self, validated_data):
+        
+        user = self.context.get('user')
         tags = validated_data.pop('tags', [])
 
-        blog = Blog.objects.create(**validated_data)
+        blog = Blog.objects.create(user=user,**validated_data)
 
         blog.tags.set(tags)
 

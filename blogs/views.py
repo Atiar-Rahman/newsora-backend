@@ -90,6 +90,8 @@ class BlogViewSet(DeleteAndRestoreMinin,ModelViewSet):
             return [AllowAny()]
         return [IsAdminOrReporterOrEditor()]
     
-    def perform_create(self, serializer):
-        serializer.save(user = self.request.user)
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['user'] = self.request.user
+        return context
     
