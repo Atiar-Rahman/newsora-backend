@@ -9,5 +9,7 @@ class UserProfileViewSet(ModelViewSet):
     
     def get_queryset(self):
         user = self.request.user
-        return Profile.objects.filter(user=user)   
+        if not user.is_authenticated:
+            return Profile.objects.none()
+        return Profile.objects.filter(user=user)
     
