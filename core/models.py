@@ -35,7 +35,7 @@ class BaseModel(models.Model):
     class Meta:
         abstract = True
 
-    def delete(self, *args, **kwargs):
+    def soft_delete(self, *args, **kwargs):
         from django.utils import timezone
 
         self.is_deleted = True

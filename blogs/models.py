@@ -1,29 +1,41 @@
 from django.db import models
 from core.models import BaseModel
-
+from blogs.slug_generate import generate_unique_slug
 
 class Category(BaseModel):
-    name = models.CharField(max_length=150, unique=True, db_index=True)
+    title = models.CharField(max_length=150, unique=True, db_index=True)
     slug = models.SlugField(unique=True)
     description = models.TextField(blank=True)
     image = models.ImageField(upload_to="categories/", null=True, blank=True)
 
     class Meta:
-        ordering = ["name"]
+        ordering = ["title"]
 
     def __str__(self):
-        return self.name
+        return self.title
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = generate_unique_slug(Category, self)
+
+        super().save(*args, **kwargs)
 
 
 class Tag(BaseModel):
-    name = models.CharField(max_length=100, unique=True)
+    title = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(unique=True)
 
     class Meta:
-        ordering = ["name"]
+        ordering = ["title"]
 
     def __str__(self):
-        return self.name
+        return self.title
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = generate_unique_slug(Tag, self)
+
+        super().save(*args, **kwargs)
 
 
 class Blog(BaseModel):
@@ -103,4 +115,8 @@ class Blog(BaseModel):
 
 
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = generate_unique_slug(Blog, self)
 
+        super().save(*args, **kwargs)
