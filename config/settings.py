@@ -110,11 +110,9 @@ DATABASES = {
 
 # Allauth configuration
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'none'  # Change to 'mandatory' in production
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-
+ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 
 
 
