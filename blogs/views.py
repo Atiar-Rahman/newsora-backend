@@ -6,6 +6,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated,IsAdminUser, AllowAny
 from blogs.permissions import IsAdminOrReporterOrEditor
+from comments.models import BlogView
+
 
 class DeleteAndRestoreMinin:
     def perform_destroy(self, instance):
@@ -95,3 +97,21 @@ class BlogViewSet(DeleteAndRestoreMinin,ModelViewSet):
         context['user'] = self.request.user
         return context
     
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        if request.user.is_authenticated:
+            BlogView.objects.get_or_create(
+                user=request.user,
+                blog=instance,
+                defaults={
+                    "ip_address": request.META.get("REMOTE_ADDR", ""),
+                    "user_agent": request.META.get("HTTP_USER_AGENT", "")
+                }
+            )
+
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+        
+
+       
