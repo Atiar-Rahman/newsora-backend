@@ -1,8 +1,15 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "functions": {
-    "wsgi.py": {
-      "runtime": "@vercel/python"
+  "builds": [
+    {
+      "src": "staybangla/wsgi.py",
+      "use": "@vercel/python",
+      "config": { "maxLambdaSize": "15mb", "runtime": "python3.12" }
     }
-  }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "staybangla/wsgi.py"
+    }
+  ]
 }
