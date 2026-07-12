@@ -4,6 +4,8 @@ from comments.models import Comment,BlogReaction,CommentReaction, Bookmark, Blog
 from comments.serializers import CommentSerializer, BlogReactionSerializer,CommentReactionSerializer, BookmarkSerializer,BlogViewSerializer, SubscriberSerializer
 from rest_framework.permissions import AllowAny, IsAdminUser,IsAuthenticated
 
+from rest_framework.decorators import action 
+from rest_framework.response import Response
 
 class PermissionMixin:
     def get_permissions(self):
@@ -26,9 +28,24 @@ class CommentsViewSet(DeleteAndRestoreMinin,PermissionMixin, ModelViewSet):
             return Comment.objects.all()
         if self.request.user.role == 'admin':
             return Comment.all_objects.all()
+    
+    @action(detail=True, methods=['post'])
+    def dis_approved(self, request, pk=None):
+        instance = self.get_object()
         
+        if self.request.user.role in ['admin','editor']:
+            instance.is_approved=False
+        
+        return Response({'message':'comment disapproved successfully'})
     
-    
+    @action(detail=True, methods=['post'])
+    def approved(self, request, pk=None):
+        instance = self.get_object()
+        
+        if self.request.user.role in ['admin','editor']:
+            instance.is_approved=True
+        
+        return Response({'message':'comment approved successfully'})
 
 
 class BlogReactionViewSet(DeleteAndRestoreMinin, PermissionMixin, ModelViewSet):
