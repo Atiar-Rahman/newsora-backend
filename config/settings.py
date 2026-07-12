@@ -21,6 +21,8 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = ['.vercel.app','127.0.0.1']
 
+CORS_ALLOW_ALL_ORIGINS = True
+
 
 # Application definition
 
@@ -32,6 +34,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     "whitenoise.runserver_nostatic",
     'django.contrib.staticfiles',
+    "corsheaders",
     'drf_yasg',
     "rest_framework",
     "debug_toolbar",
@@ -54,6 +57,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     'allauth.account.middleware.AccountMiddleware',
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     'django.middleware.security.SecurityMiddleware',
