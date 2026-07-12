@@ -1,5 +1,7 @@
 from rest_framework.serializers import ModelSerializer
-from blogs.models import Category, Blog,Tag
+from blogs.models import Category, Blog,Tag, BlogImage
+from rest_framework import serializers
+
 
 class CategorySerializer(ModelSerializer):
     class Meta:
@@ -18,14 +20,21 @@ class TagSerializer(ModelSerializer):
         model = Tag
         fields = ['id','title','slug','created_at','updated_at']
         read_only_fields = ['id','slug','created_at','updated_at']
-    
+        
+class BlogImageSerializer(ModelSerializer):
+    image = serializers.ImageField()
+    class Meta:
+        model = BlogImage
+        fields = ['id','image','name','created_at','updated_at']
+        read_only_fields = ['id','created_at','updated_at']
 
 class BlogSerializer(ModelSerializer):
+    image = BlogImageSerializer(many=True, read_only=True)
     class Meta:
         model = Blog
         fields = ['id','user','category','tags','title','slug','short_description','description','image','status','location','is_featured','views','comments_count','likes_count','published_at','meta_title','meta_description','created_at','updated_at']
 
-        read_only_fields = ['id','user','slug','created_at','updated_at']        
+        read_only_fields = ['id','user','slug','created_at','updated_at','image']        
         
     def create(self, validated_data):
         

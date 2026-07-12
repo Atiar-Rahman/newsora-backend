@@ -1,12 +1,12 @@
 from rest_framework.viewsets import ModelViewSet,GenericViewSet
 from rest_framework.mixins import ListModelMixin
-from blogs.models import Category,Tag,Blog
-from blogs.serializers import CategorySerializer, TagSerializer, BlogSerializer,CategoryNameSerializer
+from blogs.models import Category,Tag,Blog,BlogImage
+from blogs.serializers import CategorySerializer, TagSerializer, BlogSerializer,CategoryNameSerializer, BlogImageSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated,IsAdminUser, AllowAny
 from blogs.permissions import IsAdminOrReporterOrEditor
-from comments.models import BlogView
+from comments.models import BlogView, Bookmark
 
 
 class DeleteAndRestoreMinin:
@@ -72,6 +72,22 @@ class TagViewSet(DeleteAndRestoreMinin, ModelViewSet):
         return [IsAdminOrReporterOrEditor()]
 
 
+class BlogImageViewSet(DeleteAndRestoreMinin, ModelViewSet):
+    """Blog image crud api make it can heve to one blog multiple bolg"""
+    serializer_class =  BlogImageSerializer
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return Blog.objects.all()
+        if self.request.user.role in ['admin','report','editor']:
+            return Blog.all_objects.all()
+        
+        
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            return [AllowAny()]
+        return [IsAdminOrReporterOrEditor()]
+        
+
 class BlogViewSet(DeleteAndRestoreMinin,ModelViewSet):
     """
     Blog crud operation perform this viewset 
@@ -96,6 +112,36 @@ class BlogViewSet(DeleteAndRestoreMinin,ModelViewSet):
         context = super().get_serializer_context()
         context['user'] = self.request.user
         return context
+    
+    @action(detail=True, methods=['post'])
+    def bookmark(self, request, pk=None):
+
+        blog = self.get_object()
+
+        bookmark, created = Bookmark.objects.get_or_create(
+            user=request.user,
+            blog=blog
+        )
+
+        if created:
+            message = "Blog added to bookmark"
+        else:
+            message = "Already bookmarked"
+
+        return Response({
+            "message": message
+        })
+    @action(detail=True, methods=['post'])
+    def publish(self, request, pk=None):
+
+        blog = self.get_object()
+
+        blog.status = "published"
+        blog.save()
+
+        return Response({
+            "message": "Blog published"
+        })
     
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
