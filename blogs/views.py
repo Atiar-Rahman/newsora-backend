@@ -7,7 +7,8 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated,IsAdminUser, AllowAny
 from blogs.permissions import IsAdminOrReporterOrEditor
 from comments.models import BlogView, Bookmark
-
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter, OrderingFilter
 
 class DeleteAndRestoreMinin:
     def perform_destroy(self, instance):
@@ -95,6 +96,10 @@ class BlogViewSet(DeleteAndRestoreMinin,ModelViewSet):
     
     """
     serializer_class = BlogSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter ]
+    filterset_fields = ['category']
+    search_fields = ['blog','category']
+    ordering = ['created_at']
     
     def get_queryset(self):
         if not self.request.user.is_authenticated:
